@@ -1,15 +1,15 @@
 import { toast } from "sonner";
 import { useState } from "react";
-import Logo from "../../assets/logo.png";
+import Logo from "../../../assets/logo.png";
 import { Eye, EyeOff } from "lucide-react";
-import FloatingLabelInput from "../../components/FloatingLabelInput";
-import GoogleButton from "../../components/GoogleButton";
+
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../../lib/supabase";
+import FloatingLabelInput from "../../../components/FloatingLabelInput";
+import GoogleButton from "../../../components/GoogleButton";
+import { supabase } from "../../../lib/supabase";
 
-type Props = {};
 
-const FormRegister = (props: Props) => {
+const FormRegister = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

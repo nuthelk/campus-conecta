@@ -1,7 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "../layouts/Layout";
-import LoginPage from "../login";
-import RegisterPage from "../register";
+import { DashboardLayout } from "../layouts/DashboardLayout";
+import Home from "../app/home";
+import LoginPage from "../app/login";
+import RegisterPage from "../app/register";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +21,16 @@ export const router = createBrowserRouter([
       {
         path: "register",
         element: <RegisterPage />,
+      },
+      {
+        path: "/",
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "home",
+            element: <Home />,
+          },
+        ],
       },
     ],
   },

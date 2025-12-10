@@ -1,4 +1,4 @@
-import background from "../assets/background.png";
+import background from "../../assets/background.png";
 import FormLogin from "./components/FormLogin";
 
 const LoginPage = () => {
