@@ -52,10 +52,8 @@ const SidebarContent = ({ isCollapsed = false, onToggle }: { isCollapsed?: boole
                 <div className="my-2 px-2">
                     <Separator className="bg-white/20" />
                 </div>
-                <SidebarItem icon={<PlusCircle size={20} />} label="Crear publicación" isCollapsed={isCollapsed} />
-                <SidebarItem icon={<Edit size={20} />} label="Editar publicación" isCollapsed={isCollapsed} />
-                <SidebarItem icon={<Trash2 size={20} />} label="Eliminar publicación" isCollapsed={isCollapsed} />
-                <SidebarItem icon={<FileText size={20} />} label="Revisar publicación" isCollapsed={isCollapsed} />
+                <SidebarItem icon={<PlusCircle size={20} />} label="Crear publicación" isCollapsed={isCollapsed} onClick={() => navigate("/create-post")} />
+
             </div>
 
             <div className="mt-auto px-2">

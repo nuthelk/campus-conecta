@@ -4,6 +4,7 @@ import { DashboardLayout } from "../layouts/DashboardLayout";
 import Home from "../app/home";
 import LoginPage from "../app/login";
 import RegisterPage from "../app/register";
+import CreatePostPage from "../app/create-post";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
           {
             path: "home",
             element: <Home />,
+          },
+          {
+            path: "create-post",
+            element: <CreatePostPage />,
           },
         ],
       },
