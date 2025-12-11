@@ -21,4 +21,5 @@ export interface Post {
   extension_archivo: string | null;
   creado_en: string;
   actualizado_en: string;
+  url_video: string | null;
 }

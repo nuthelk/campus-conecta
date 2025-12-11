@@ -5,6 +5,7 @@ import Home from "../app/home";
 import LoginPage from "../app/login";
 import RegisterPage from "../app/register";
 import CreatePostPage from "../app/create-post";
+import Posts from "@/app/posts";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
           {
             path: "create-post",
             element: <CreatePostPage />,
+          },
+          {
+            path: "posts",
+            element: <Posts />,
           },
         ],
       },

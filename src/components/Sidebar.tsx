@@ -8,6 +8,7 @@ import {
     User,
     LogOut,
     Menu,
+    Milestone,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -49,6 +50,7 @@ const SidebarContent = ({ isCollapsed = false, onToggle }: { isCollapsed?: boole
             <div className="flex flex-col gap-2 px-2">
                 <SidebarItem icon={<HomeIcon size={20} />} label="Inicio" onClick={() => navigate("/home")} isCollapsed={isCollapsed} />
                 <SidebarItem icon={<User size={20} />} label="Perfil" isCollapsed={isCollapsed} />
+                <SidebarItem icon={<Milestone size={20} />} onClick={() => navigate("/posts")} label="Publicaciones" isCollapsed={isCollapsed} />
                 <div className="my-2 px-2">
                     <Separator className="bg-white/20" />
                 </div>
