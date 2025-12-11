@@ -18,7 +18,7 @@ import { Separator } from "./ui/separator";
 const SidebarItem = ({ icon, label, onClick, isCollapsed }: { icon: React.ReactNode; label?: string; onClick?: () => void; isCollapsed?: boolean }) => (
     <Button
         variant="ghost"
-        className={`w-full justify-start text-white hover:text-white hover:bg-white/10 ${isCollapsed ? "px-2 justify-center" : "px-4"}`}
+        className={`w-full cursor-pointer justify-start text-white hover:text-white hover:bg-white/10 ${isCollapsed ? "px-2 justify-center" : "px-4"}`}
         onClick={onClick}
         title={label}
     >
@@ -33,12 +33,12 @@ const SidebarContent = ({ isCollapsed = false, onToggle }: { isCollapsed?: boole
     return (
         <div className="flex flex-col h-full py-6">
             {/* Toggle / Logo Area */}
-            <div className={`flex items-center ${isCollapsed ? "justify-center" : "justify-between"} mb-8 px-2`}>
+            <div className={`flex  items-center ${isCollapsed ? "justify-center" : "justify-between"} mb-8 px-2`}>
                 {!isCollapsed && <span className="text-xl font-bold text-white pl-2">Menu</span>}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-white hover:bg-white/10"
+                    className="text-white cursor-pointer hover:bg-white/10"
                     onClick={onToggle}
                 // Only functional in desktop mode for collapsing. In mobile sheet, this might just close the sheet or be hidden.
                 >
@@ -56,7 +56,7 @@ const SidebarContent = ({ isCollapsed = false, onToggle }: { isCollapsed?: boole
 
             </div>
 
-            <div className="mt-auto px-2">
+            <div className="mt-auto px-2 ">
                 <SidebarItem
                     icon={<LogOut size={20} />}
                     label="Cerrar sesión"

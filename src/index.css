@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Safelist: clases de colores usadas dinámicamente desde la base de datos */
+@utility bg-teal-500 { background-color: oklch(0.6 0.118 184.704); }
+@utility bg-indigo-500 { background-color: oklch(0.585 0.233 277.117); }
+@utility bg-indigo-600 { background-color: oklch(0.511 0.262 276.966); }
+@utility bg-emerald-600 { background-color: oklch(0.596 0.145 163.225); }
+@utility bg-red-500 { background-color: oklch(0.637 0.237 25.331); }
+@utility bg-cyan-600 { background-color: oklch(0.609 0.126 200.058); }
+@utility bg-green-600 { background-color: oklch(0.627 0.194 149.214); }
+@utility bg-pink-500 { background-color: oklch(0.656 0.241 354.308); }
+@utility bg-blue-500 { background-color: oklch(0.623 0.214 259.815); }
+@utility bg-blue-600 { background-color: oklch(0.546 0.245 262.881); }
+@utility bg-orange-500 { background-color: oklch(0.705 0.213 47.604); }
+@utility bg-gray-800 { background-color: oklch(0.278 0.006 286.033); }
+@utility bg-slate-600 { background-color: oklch(0.446 0.043 257.281); }
+@utility bg-rose-500 { background-color: oklch(0.645 0.246 16.439); }
+@utility bg-purple-500 { background-color: oklch(0.627 0.265 303.9); }
+@utility bg-purple-700 { background-color: oklch(0.452 0.211 308.862); }
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

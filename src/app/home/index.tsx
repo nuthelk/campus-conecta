@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Search, GraduationCap, Loader2 } from "lucide-react";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { renderCategoryIcon } from "@/lib/iconMap";
+import { getColorValue } from "@/lib/colorMap";
 
 const Home = () => {
   const { categories, isLoading, error, fetchCategories } = useCategoriesStore();
@@ -44,14 +45,17 @@ const Home = () => {
 
       {/* Categories Grid */}
       {!isLoading && !error && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 pb-6 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {categories.map((category) => (
             <div
               key={category.id}
               className={`group relative overflow-hidden rounded-2xl h-40 lg:h-48 cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}
             >
               {/* Background Color & Gradient */}
-              <div className={`absolute inset-0 ${category.color} opacity-90 transition-opacity group-hover:opacity-100 bg-gradient-to-br from-white/10 to-black/5`}></div>
+              <div
+                className="absolute inset-0 opacity-90 transition-opacity group-hover:opacity-100"
+                style={{ backgroundColor: getColorValue(category.color) }}
+              />
 
               {/* Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-3 p-4">
