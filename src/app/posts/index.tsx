@@ -17,7 +17,7 @@ const Posts = () => {
 
     return (
         <main className=" p-8 h-full">
-            <section>
+            <section className='pb-10'>
                 <h1 className="text-3xl lg:text-4xl font-bold text-[#1a1b4b] mb-8">Publicaciones recientes</h1>
                 <div>
                     {posts.map((post) => (

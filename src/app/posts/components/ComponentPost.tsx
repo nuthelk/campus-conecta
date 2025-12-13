@@ -1,8 +1,9 @@
-import { Download, StickyNote, Play, Image as ImageIcon } from 'lucide-react'
+import { Download, StickyNote, Play, Image as ImageIcon, MessageCircle, Heart } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { Post } from '@/types/Post'
 import { getUser } from '@/api/getUser';
 import type { Perfil } from '@/types/User';
+import CollapsibleText from '@/components/CollapsibleText';
 
 type Props = {
     post: Post;
@@ -39,14 +40,38 @@ const ComponentPost = ({ post }: Props) => {
 
     // Formatear fecha relativa
     const formatTimeAgo = (dateString: string) => {
-        const date = new Date(dateString);
+        // Parse the date string correctly, handling different formats
+        let date: Date;
+
+        // Attempt to create a date object more reliably
+        if (typeof dateString === 'string') {
+            // Normalize the date string to ensure proper parsing
+            const normalizedDate = dateString.replace(' ', 'T'); // Convert space separator to T
+            date = new Date(normalizedDate);
+        } else {
+            date = new Date(dateString);
+        }
+
+        // Check if the date is valid
+        if (isNaN(date.getTime())) {
+            console.error('Fecha inválida:', dateString);
+            return 'Reciente';
+        }
+
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 60) {
+        // Convert to positive value to avoid negative differences due to timezone issues
+        const absDiffMs = Math.abs(diffMs);
+
+        const diffSecs = Math.floor(absDiffMs / 1000);
+        const diffMins = Math.floor(absDiffMs / 60000);
+        const diffHours = Math.floor(absDiffMs / 3600000);
+        const diffDays = Math.floor(absDiffMs / 86400000);
+
+        if (diffSecs < 60) {
+            return `${diffSecs}s`;
+        } else if (diffMins < 60) {
             return `${diffMins}m`;
         } else if (diffHours < 24) {
             return `${diffHours}h`;
@@ -64,7 +89,7 @@ const ComponentPost = ({ post }: Props) => {
     }, [])
 
     return (
-        <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[700px] mb-4">
+        <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[900px] mb-4">
             {/* Header del post */}
             <div className="flex items-start gap-4 mb-4">
                 <div className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0">
@@ -83,16 +108,20 @@ const ComponentPost = ({ post }: Props) => {
                 </div>
 
                 <div className='flex-1'>
-                    <div className='flex items-center gap-2 mb-1'>
-                        <p className='text-[#1B003A] font-semibold text-base'>
+                    <div className='flex items-center gap-2 mb-4 '>
+                        <p className='text-[#1B003A] font-semibold text-sm'>
                             {user ? `${user.nombre} ${user.apellido}` : 'Usuario'}
                         </p>
                         <span className='text-[#928A9C] font-normal text-sm'>
-                            {formatTimeAgo(post.creado_en)}
+                            - {formatTimeAgo(post.creado_en)}
                         </span>
                     </div>
-                    <h3 className='text-[#1B003A] font-semibold text-lg mb-2'>{post.titulo}</h3>
-                    <p className='text-[#1B003A] font-normal text-base'>{post.contenido}</p>
+                    <div className='flex items-center gap-2 '>
+
+                        <h3 className='text-[#1B003A] font-semibold text-lg '>{post.titulo}</h3>
+
+                    </div>
+                    <CollapsibleText text={post.contenido} maxLength={150} className="mt-2" />
                 </div>
             </div>
 
@@ -116,10 +145,7 @@ const ComponentPost = ({ post }: Props) => {
                                 </div>
                             )}
                         </div>
-                        <div className="bg-[#FF0000] p-3 flex items-center gap-2">
-                            <Play className="text-white" size={20} />
-                            <span className="text-white font-semibold">Video de YouTube</span>
-                        </div>
+
                     </div>
                 )}
 
@@ -127,11 +153,11 @@ const ComponentPost = ({ post }: Props) => {
                 {post.url_archivo && isImageFile(post.url_archivo, post?.extension_archivo) && (
                     <div className="rounded-[10px] overflow-hidden border border-gray-200">
                         <div className="relative">
-                            <div className="aspect-video w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <div className="aspect-video rounded-[10px] w-full bg-gray-100 flex items-center justify-center overflow-hidden">
                                 <img
                                     src={post.url_archivo}
                                     alt={post.nombre_archivo || 'Imagen adjunta'}
-                                    className="w-full h-full object-contain max-h-[400px]"
+                                    className="w-full h-full rounded-[10px] object-contain max-h-[400px]"
                                     onLoad={() => setIsImageLoaded(true)}
                                     onError={(e) => {
                                         e.currentTarget.style.display = 'none';
@@ -155,10 +181,7 @@ const ComponentPost = ({ post }: Props) => {
                                     </div>
                                 )}
                             </div>
-                            <div className="bg-[#6400A9] p-3 flex items-center gap-2">
-                                <ImageIcon className="text-white" size={20} />
-                                <span className="text-white font-semibold">{post.nombre_archivo || 'Imagen'}</span>
-                            </div>
+
                         </div>
                     </div>
                 )}
@@ -171,6 +194,15 @@ const ComponentPost = ({ post }: Props) => {
                         extension={post.extension_archivo!}
                     />
                 )}
+            </div>
+            <div className='flex items-center gap-3 mt-4 justify-end'>
+                <div className='cursor-pointer hover:bg-[#e8e6fc] p-2 rounded-full'>
+                    <Heart size={23} />
+                </div>
+                <div className='cursor-pointer hover:bg-[#e8e6fc] p-2 rounded-full'>
+                    <MessageCircle size={20} />
+                </div>
+
             </div>
         </div>
     )
@@ -193,7 +225,7 @@ const Archive = ({ name, url, extension }: ArchiveProps) => {
             onClick={handleDownload}
         >
             <div className='flex items-center gap-2'>
-                <StickyNote className="text-white" />
+                <StickyNote size={30} className="text-white" />
                 <div className='flex flex-col'>
                     <p className='text-white font-semibold text-base truncate max-w-[200px]'>{name}</p>
                     {extension && (

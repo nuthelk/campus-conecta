@@ -7,6 +7,7 @@ export interface CreatePostData {
   url_archivo?: string | null;
   nombre_archivo?: string | null;
   extension_archivo?: string | null;
+  url_video?: string | null;
 }
 
 export interface Post {

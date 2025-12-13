@@ -100,7 +100,8 @@ export const usePostForm = () => {
         }
 
         // Determine URL (video or file)
-        const urlArchivo = formData.mediaType === 'video' && formData.videoUrl ? formData.videoUrl : undefined;
+        const urlArchivo = formData.mediaType !== 'video' ? formData.file?.name : null;
+        const urlVideo = formData.mediaType === 'video' && formData.videoUrl ? formData.videoUrl : null;
 
         const result = await createPost(
             {
@@ -110,6 +111,7 @@ export const usePostForm = () => {
                 titulo: formData.titulo.trim(),
                 contenido: formData.contenido.trim(),
                 url_archivo: urlArchivo,
+                url_video: urlVideo,
             },
             formData.mediaType !== 'video' ? formData.file : null
         );
