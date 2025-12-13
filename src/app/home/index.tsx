@@ -1,28 +1,40 @@
 import { useEffect, useState } from "react";
 import { Search, GraduationCap, Loader2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { useSubcategoriesStore } from "@/stores/useSubcategoriesStore";
 import { renderCategoryIcon } from "@/lib/iconMap";
 import { getColorValue } from "@/lib/colorMap";
 import { useSearch } from "./hooks/useSearch";
+import { useCategoryFilter } from "./hooks/useCategoryFilter";
 import PostCard from "./components/PostCard";
 import PostModal from "@/app/posts/components/PostModal";
 import type { Post } from "@/types/Post";
+import type { Category } from "@/types/Category";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const { categories, isLoading, error, fetchCategories } =
     useCategoriesStore();
   const { fetchSubcategories } = useSubcategoriesStore();
   const {
     searchTerm,
-    filteredPosts,
+    filteredPosts: searchPosts,
     isSearching,
     handleSearchChange,
     clearSearch,
   } = useSearch();
+
+  const {
+    selectedCategory,
+    filteredPosts: categoryPosts,
+    isFiltering,
+    handleCategoryClick,
+    clearCategoryFilter,
+  } = useCategoryFilter();
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -68,8 +80,8 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Mostrar categorías o resultados de búsqueda */}
-      {!isSearching ? (
+      {/* Mostrar categorías o resultados */}
+      {!isSearching && !isFiltering ? (
         <>
           <h1 className="text-3xl lg:text-4xl font-bold text-[#1a1b4b] mb-8">
             Selecciona una categoría
@@ -95,6 +107,7 @@ const Home = () => {
               {categories.map((category) => (
                 <div
                   key={category.id}
+                  onClick={() => handleCategoryClick(category)}
                   className={`group relative overflow-hidden rounded-2xl h-40 lg:h-48 cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}
                 >
                   {/* Background Color & Gradient */}
@@ -122,14 +135,27 @@ const Home = () => {
         </>
       ) : (
         <>
-          <h1 className="text-3xl lg:text-4xl font-bold text-[#1a1b4b] mb-8">
-            Resultados de búsqueda
-          </h1>
+          <div className="flex items-center gap-4 mb-8">
+            {isFiltering && (
+              <button
+                onClick={clearCategoryFilter}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-700 font-medium"
+              >
+                <X size={18} />
+                Volver a categorías
+              </button>
+            )}
+            <h1 className="text-3xl lg:text-4xl font-bold text-[#1a1b4b]">
+              {isSearching
+                ? "Resultados de búsqueda"
+                : `Publicaciones de "${selectedCategory?.nombre}"`}
+            </h1>
+          </div>
 
           {/* Posts Grid */}
-          {filteredPosts.length > 0 ? (
+          {(isSearching ? searchPosts : categoryPosts).length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredPosts.map((post) => (
+              {(isSearching ? searchPosts : categoryPosts).map((post: Post) => (
                 <PostCard
                   key={post.id}
                   post={post}
@@ -140,7 +166,9 @@ const Home = () => {
           ) : (
             <div className="text-center py-20 text-gray-500">
               <p>
-                No se encontraron publicaciones que coincidan con "{searchTerm}"
+                {isSearching
+                  ? `No se encontraron publicaciones que coincidan con "${searchTerm}"`
+                  : `No hay publicaciones en la categoría "${selectedCategory?.nombre}"`}
               </p>
             </div>
           )}

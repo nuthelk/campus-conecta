@@ -1,5 +1,6 @@
 import { getPosts } from "@/api/getPosts";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ComponentPost from "./components/ComponentPost";
 import PostModal from "./components/PostModal";
 import type { Post } from "@/types/Post";
