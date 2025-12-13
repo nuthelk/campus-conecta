@@ -74,28 +74,23 @@ export const ProfileForm: React.FC = () => {
   const uploadAvatar = async (file: File): Promise<string | null> => {
     try {
       const fileExt = file.name.split(".").pop();
-      const fileName = `${authUser?.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${authUser?.id}/avatar-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+        .from("files")
+        .upload(fileName, file);
 
       if (uploadError) {
         console.error("Upload error details:", uploadError);
-        // Si el error es por RLS, intentar con un enfoque diferente
-        if (uploadError.message?.includes("row-level security policy")) {
-          toast.error(
-            "No tienes permisos para subir archivos. Contacta al administrador."
-          );
-          return null;
-        }
-        throw uploadError;
+        toast.error(
+          "No tienes permisos para subir archivos. Contacta al administrador."
+        );
+        return null;
       }
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      } = supabase.storage.from("files").getPublicUrl(fileName);
 
       return publicUrl;
     } catch (error) {
