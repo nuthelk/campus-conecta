@@ -207,7 +207,7 @@ export const ProfileForm: React.FC = () => {
           <button
             type="button"
             onClick={removeAvatar}
-            className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1"
+            className="text-sm cursor-pointer text-red-600 hover:text-red-700 flex items-center gap-1"
           >
             <X size={16} />
             Eliminar foto
@@ -299,7 +299,7 @@ export const ProfileForm: React.FC = () => {
         <Button
           type="submit"
           disabled={saving}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 flex items-center gap-2"
+          className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-6 py-2 flex items-center gap-2"
         >
           <Save size={20} />
           {saving ? "Guardando..." : "Guardar cambios"}
