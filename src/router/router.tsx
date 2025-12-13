@@ -6,6 +6,7 @@ import LoginPage from "../app/login";
 import RegisterPage from "../app/register";
 import CreatePostPage from "../app/create-post";
 import Posts from "@/app/posts";
+import ProfilePage from "@/app/profile";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
           {
             path: "posts",
             element: <Posts />,
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
           },
         ],
       },
