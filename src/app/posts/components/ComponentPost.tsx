@@ -18,9 +18,10 @@ import { getColorValue } from "@/lib/colorMap";
 type Props = {
   post: Post;
   onOpenModal: () => void;
+  onOpenProfile?: (profile: Perfil | null) => void;
 };
 
-const ComponentPost = ({ post, onOpenModal }: Props) => {
+const ComponentPost = ({ post, onOpenModal, onOpenProfile }: Props) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [user, setUser] = useState<Perfil | null>(null);
@@ -113,7 +114,10 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
     <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[700px] mb-4">
       {/* Header del post */}
       <div className="flex items-start gap-4 mb-4">
-        <div className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0">
+        <div
+          className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => user && onOpenProfile && onOpenProfile(user)}
+        >
           {user?.avatar_url ? (
             <img
               src={user.avatar_url}
@@ -132,7 +136,10 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
         <div className="flex-1">
           <div className="flex justify-between items-center gap-2 ">
             <div className="flex items-center gap-2">
-              <p className="text-[#1B003A] font-semibold text-sm">
+              <p
+                className="text-[#1B003A] font-semibold text-sm cursor-pointer hover:text-[#6400A9] transition-colors"
+                onClick={() => user && onOpenProfile && onOpenProfile(user)}
+              >
                 {user ? `${user.nombre} ${user.apellido}` : "Usuario"}
               </p>
               <span className="text-[#928A9C] font-normal text-sm">

@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import {
   PlusCircle,
-  Edit,
-  Trash2,
-  FileText,
   Home as HomeIcon,
   User,
   LogOut,
   Menu,
   Milestone,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -29,17 +26,19 @@ const SidebarItem = ({
   label,
   onClick,
   isCollapsed,
+  isActive,
 }: {
   icon: React.ReactNode;
   label?: string;
   onClick?: () => void;
   isCollapsed?: boolean;
+  isActive?: boolean;
 }) => (
   <Button
     variant="ghost"
     className={`w-full cursor-pointer justify-start text-white hover:text-white hover:bg-white/10 ${
       isCollapsed ? "px-2 justify-center" : "px-4"
-    }`}
+    } ${isActive ? "bg-white/20 border-l-4 border-white" : ""}`}
     onClick={onClick}
     title={label}
   >
@@ -73,10 +72,16 @@ const SidebarContent = ({
   onToggle: () => void;
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogoutWithNavigate = async () => {
     await handleLogout();
     navigate("/login");
+  };
+
+  // Función para determinar si un item está activo
+  const isActive = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
@@ -107,18 +112,21 @@ const SidebarContent = ({
           label="Inicio"
           onClick={() => navigate("/home")}
           isCollapsed={isCollapsed}
+          isActive={isActive("/home")}
         />
         <SidebarItem
           icon={<User size={20} />}
           label="Perfil"
           onClick={() => navigate("/profile")}
           isCollapsed={isCollapsed}
+          isActive={isActive("/profile")}
         />
         <SidebarItem
           icon={<Milestone size={20} />}
           onClick={() => navigate("/posts")}
           label="Publicaciones"
           isCollapsed={isCollapsed}
+          isActive={isActive("/posts")}
         />
         <div className="my-2 px-2">
           <Separator className="bg-white/20" />
@@ -128,6 +136,7 @@ const SidebarContent = ({
           label="Crear publicación"
           isCollapsed={isCollapsed}
           onClick={() => navigate("/create-post")}
+          isActive={isActive("/create-post")}
         />
       </div>
 
@@ -146,6 +155,12 @@ const SidebarContent = ({
 export const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Función para determinar si un item está activo
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <>
@@ -191,12 +206,14 @@ export const Sidebar = () => {
                   label="Inicio"
                   onClick={() => navigate("/home")}
                   isCollapsed={false}
+                  isActive={isActive("/home")}
                 />
                 <SidebarItem
                   icon={<User size={20} />}
                   label="Perfil"
                   onClick={() => navigate("/profile")}
                   isCollapsed={false}
+                  isActive={isActive("/profile")}
                 />
                 <div className="my-2 px-2">
                   <Separator className="bg-white/20" />
@@ -205,21 +222,14 @@ export const Sidebar = () => {
                   icon={<PlusCircle size={20} />}
                   label="Crear publicación"
                   isCollapsed={false}
+                  isActive={isActive("/create-post")}
                 />
                 <SidebarItem
-                  icon={<Edit size={20} />}
-                  label="Editar publicación"
+                  icon={<Milestone size={20} />}
+                  label="Publicaciones"
+                  onClick={() => navigate("/posts")}
                   isCollapsed={false}
-                />
-                <SidebarItem
-                  icon={<Trash2 size={20} />}
-                  label="Eliminar publicación"
-                  isCollapsed={false}
-                />
-                <SidebarItem
-                  icon={<FileText size={20} />}
-                  label="Revisar publicación"
-                  isCollapsed={false}
+                  isActive={isActive("/posts")}
                 />
               </div>
               <div className="mt-auto px-2">

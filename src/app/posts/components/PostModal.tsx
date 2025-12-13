@@ -14,6 +14,7 @@ import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { useSubcategoriesStore } from "@/stores/useSubcategoriesStore";
 import { renderCategoryIcon } from "@/lib/iconMap";
 import { getColorValue } from "@/lib/colorMap";
+import UserProfileSlider from "@/components/UserProfileSlider";
 
 type Props = {
   post: Post;
@@ -24,6 +25,7 @@ type Props = {
 const PostModal = ({ post, isOpen, onClose }: Props) => {
   const [user, setUser] = useState<Perfil | null>(null);
   const [commentText, setCommentText] = useState("");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const currentUser = useAuthUser();
   const { comments, addComment } = useComments(post.id, isOpen);
@@ -81,7 +83,10 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
           <div className="p-6 max-w-[800px] mx-auto">
             {/* Post Header */}
             <div className="flex items-start gap-4 mb-6">
-              <div className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0">
+              <div
+                className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => user && setIsProfileOpen(true)}
+              >
                 {user?.avatar_url ? (
                   <img
                     src={user.avatar_url}
@@ -98,7 +103,10 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
 
               <div className="flex justify-between w-full items-center">
                 <div className="flex items-center gap-2 mb-2">
-                  <p className="text-[#1B003A] font-semibold text-base">
+                  <p
+                    className="text-[#1B003A] font-semibold text-base cursor-pointer hover:text-[#6400A9] transition-colors"
+                    onClick={() => user && setIsProfileOpen(true)}
+                  >
                     {user ? `${user.nombre} ${user.apellido}` : "Usuario"}
                   </p>
                   <span className="text-[#928A9C] font-normal text-sm">
@@ -214,6 +222,13 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
           </div>
         </div>
       </div>
+
+      {/* User Profile Slider */}
+      <UserProfileSlider
+        user={user}
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 };

@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ComponentPost from "./components/ComponentPost";
 import PostModal from "./components/PostModal";
+import UserProfileSlider from "@/components/UserProfileSlider";
 import type { Post } from "@/types/Post";
+import type { Perfil } from "@/types/User";
 
 const Posts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<Perfil | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -30,6 +33,7 @@ const Posts = () => {
                 key={post.id}
                 post={post}
                 onOpenModal={() => setSelectedPost(post)}
+                onOpenProfile={(profile) => setSelectedProfile(profile)}
               />
             ))}
           </div>
@@ -45,6 +49,15 @@ const Posts = () => {
           post={selectedPost}
           isOpen={!!selectedPost}
           onClose={() => setSelectedPost(null)}
+        />
+      )}
+
+      {/* User Profile Slider at root level */}
+      {selectedProfile && (
+        <UserProfileSlider
+          user={selectedProfile}
+          isOpen={!!selectedProfile}
+          onClose={() => setSelectedProfile(null)}
         />
       )}
     </>
