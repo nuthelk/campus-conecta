@@ -1,9 +1,15 @@
-import { Download, StickyNote, MessageCircle, Heart } from "lucide-react";
+import { MessageCircle, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Post } from "@/types/Post";
 import { getUser } from "@/api/getUser";
+import { createLike, deleteLike } from "@/api/likeComment";
+import { supabase } from "@/lib/supabase";
 import type { Perfil } from "@/types/User";
 import CollapsibleText from "@/components/CollapsibleText";
+import { toast } from "sonner";
+import { formatTimeAgo } from "../utils/formatTimeAgo";
+import { getYouTubeId, isYouTubeUrl, isImageFile } from "../utils/mediaUtils";
+import Archive from "./Archive";
 
 type Props = {
   post: Post;
@@ -14,73 +20,10 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [user, setUser] = useState<Perfil | null>(null);
-
-  // Función para extraer el ID de YouTube de una URL
-  const getYouTubeId = (url: string) => {
-    const regExp =
-      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[7].length === 11 ? match[7] : null;
-  };
-
-  // Detectar si es una URL de YouTube
-  const isYouTubeUrl = (url: string) => {
-    return url.includes("youtube.com") || url.includes("youtu.be");
-  };
-
-  // Detectar si es una imagen por extensión
-  const isImageFile = (url: string, extension?: string) => {
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "svg"];
-    const urlLower = url.toLowerCase();
-
-    if (extension) {
-      return imageExtensions.includes(extension.toLowerCase());
-    }
-
-    return imageExtensions.some((ext) => urlLower.includes(`.${ext}`));
-  };
-
-  // Formatear fecha relativa
-  const formatTimeAgo = (dateString: string) => {
-    // Parse the date string correctly, handling different formats
-    let date: Date;
-
-    // Attempt to create a date object more reliably
-    if (typeof dateString === "string") {
-      // Normalize the date string to ensure proper parsing
-      const normalizedDate = dateString.replace(" ", "T"); // Convert space separator to T
-      date = new Date(normalizedDate);
-    } else {
-      date = new Date(dateString);
-    }
-
-    // Check if the date is valid
-    if (isNaN(date.getTime())) {
-      console.error("Fecha inválida:", dateString);
-      return "Reciente";
-    }
-
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-
-    // Convert to positive value to avoid negative differences due to timezone issues
-    const absDiffMs = Math.abs(diffMs);
-
-    const diffSecs = Math.floor(absDiffMs / 1000);
-    const diffMins = Math.floor(absDiffMs / 60000);
-    const diffHours = Math.floor(absDiffMs / 3600000);
-    const diffDays = Math.floor(absDiffMs / 86400000);
-
-    if (diffSecs < 60) {
-      return `${diffSecs}s`;
-    } else if (diffMins < 60) {
-      return `${diffMins}m`;
-    } else if (diffHours < 24) {
-      return `${diffHours}h`;
-    } else {
-      return `${diffDays}d`;
-    }
-  };
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [likes, setLikes] = useState(post.likes || []);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -88,7 +31,57 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
       setUser(user[0]);
     };
     fetchUser();
-  }, []);
+  }, [post.usuario_id]);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUser(user);
+        // Verificar si el usuario actual ya le dio like a este post
+        const userLiked = likes.some((like) => like.usuario_id === user.id);
+        setIsLiked(userLiked);
+      }
+    };
+    getCurrentUser();
+  }, [likes]);
+
+  const handleLike = async () => {
+    if (!currentUser || isLiking) return;
+
+    setIsLiking(true);
+
+    try {
+      if (isLiked) {
+        // Quitar like
+        const result = await deleteLike(post.id, currentUser.id);
+        if (result.success) {
+          setLikes(likes.filter((like) => like.usuario_id !== currentUser.id));
+          setIsLiked(false);
+          toast.success("Like eliminado");
+        } else {
+          toast.error("Error al eliminar like");
+        }
+      } else {
+        // Dar like
+        const result = await createLike(post.id, currentUser.id);
+        if (result.success && result.like) {
+          setLikes([...likes, result.like]);
+          setIsLiked(true);
+          toast.success("Like agregado");
+        } else {
+          toast.error("Error al agregar like");
+        }
+      }
+    } catch (error) {
+      console.error("Error handling like:", error);
+      toast.error("Error al procesar like");
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   return (
     <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[900px] mb-4">
@@ -159,7 +152,10 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
 
         {/* Imagen adjunta */}
         {post.url_archivo &&
-          isImageFile(post.url_archivo, post?.extension_archivo) && (
+          isImageFile(
+            post.url_archivo,
+            post?.extension_archivo || undefined
+          ) && (
             <div className="rounded-[10px] overflow-hidden border border-gray-200">
               <div className="relative">
                 <div className="aspect-video rounded-[10px] w-full bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -197,7 +193,10 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
 
         {/* Archivo no imagen */}
         {post.url_archivo &&
-          !isImageFile(post.url_archivo, post?.extension_archivo) && (
+          !isImageFile(
+            post.url_archivo,
+            post?.extension_archivo || undefined
+          ) && (
             <Archive
               name={post.nombre_archivo || "Archivo adjunto"}
               url={post.url_archivo}
@@ -206,11 +205,16 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
           )}
       </div>
       <div className="flex items-center gap-3 mt-4 justify-end">
-        <div className="cursor-pointer hover:bg-[#e8e6fc] p-2 rounded-full flex items-center gap-1">
-          <Heart size={23} />
-          {post.likes && post.likes.length > 0 && (
+        <div
+          className={`cursor-pointer p-2 rounded-full flex items-center gap-1 transition-colors ${
+            isLiked ? "bg-[#e8e6fc] text-[#6400A9]" : "hover:bg-[#e8e6fc]"
+          } ${isLiking ? "opacity-50 cursor-not-allowed" : ""}`}
+          onClick={isLiking ? undefined : handleLike}
+        >
+          <Heart size={23} fill={isLiked ? "#6400A9" : "none"} />
+          {likes.length > 0 && (
             <span className="text-sm text-[#1B003A] font-medium">
-              {post.likes.length}
+              {likes.length}
             </span>
           )}
         </div>
@@ -226,38 +230,6 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-interface ArchiveProps {
-  name: string;
-  url: string;
-  extension?: string;
-}
-
-const Archive = ({ name, url, extension }: ArchiveProps) => {
-  const handleDownload = () => {
-    window.open(url, "_blank");
-  };
-
-  return (
-    <div
-      className="rounded-[10px] bg-[#4F82C0] max-w-[300px] p-3 flex items-center gap-2 justify-between cursor-pointer hover:bg-[#3a6ba8] transition-colors"
-      onClick={handleDownload}
-    >
-      <div className="flex items-center gap-2">
-        <StickyNote size={30} className="text-white" />
-        <div className="flex flex-col">
-          <p className="text-white font-semibold text-base truncate max-w-[200px]">
-            {name}
-          </p>
-          {extension && (
-            <p className="text-white/80 text-xs">.{extension.toLowerCase()}</p>
-          )}
-        </div>
-      </div>
-      <Download className="text-white" />
     </div>
   );
 };

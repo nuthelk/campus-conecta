@@ -5,9 +5,9 @@ import { Eye, EyeOff } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../lib/supabase";
+import { checkUserExists } from "../../../api/checkUserExists";
 import FloatingLabelInput from "../../../components/FloatingLabelInput";
 import GoogleButton from "../../../components/GoogleButton";
-
 
 const FormLogin = () => {
   const navigate = useNavigate();
@@ -35,10 +35,25 @@ const FormLogin = () => {
       if (error) throw error;
 
       if (data.user) {
+        // Verificar si el usuario existe en la tabla perfiles
+        const userExists = await checkUserExists(data.user.id);
+
+        if (!userExists) {
+          // Si el usuario no existe en perfiles, cerrar sesión y redirigir a registro
+          await supabase.auth.signOut();
+          toast.error(
+            "Tu cuenta no está registrada. Por favor completa tu registro."
+          );
+          navigate("/register");
+          return;
+        }
+
         navigate("/home");
       }
-    } catch (error: any) {
-      console.error("Error signing in:", error.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error desconocido";
+      console.error("Error signing in:", errorMessage);
       toast.error("Credenciales incorrectas. Por favor intenta de nuevo.");
     } finally {
       setIsLoading(false);

@@ -1,9 +1,15 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router/router";
-import './App.css'
+import { Toaster } from "./components/ui/sonner";
+import "./App.css";
 
 function App() {
-  return <RouterProvider router={router} />
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
+  );
 }
 
-export default App
+export default App;

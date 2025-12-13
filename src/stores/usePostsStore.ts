@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
-import type { CreatePostData, Post } from '@/types/Post';
+import { create } from "zustand";
+import { supabase } from "@/lib/supabase";
+import type { CreatePostData, Post } from "@/types/Post";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -8,7 +8,10 @@ interface PostsState {
   posts: Post[];
   isLoading: boolean;
   error: string | null;
-  createPost: (data: CreatePostData, file?: File | null) => Promise<{ success: boolean; error?: string; post?: Post }>;
+  createPost: (
+    data: CreatePostData,
+    file?: File | null
+  ) => Promise<{ success: boolean; error?: string; post?: Post }>;
 }
 
 export const usePostsStore = create<PostsState>((set) => ({
@@ -31,25 +34,32 @@ export const usePostsStore = create<PostsState>((set) => ({
           set({ isLoading: false });
           return {
             success: false,
-            error: `El archivo excede el límite de 5MB. Tamaño actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`
+            error: `El archivo excede el límite de 5MB. Tamaño actual: ${(
+              file.size /
+              1024 /
+              1024
+            ).toFixed(2)}MB`,
           };
         }
 
-        const fileExt = file.name.split('.').pop() || '';
+        const fileExt = file.name.split(".").pop() || "";
         const fileName = `${data.usuario_id}/${Date.now()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('files')
+          .from("files")
           .upload(fileName, file);
 
         if (uploadError) {
           set({ isLoading: false });
-          return { success: false, error: `Error al subir archivo: ${uploadError.message}` };
+          return {
+            success: false,
+            error: `Error al subir archivo: ${uploadError.message}`,
+          };
         }
 
         // Get public URL
         const { data: urlData } = supabase.storage
-          .from('files')
+          .from("files")
           .getPublicUrl(fileName);
 
         url_archivo = urlData.publicUrl;
@@ -59,19 +69,24 @@ export const usePostsStore = create<PostsState>((set) => ({
 
       // Create post in database
       const { data: post, error: insertError } = await supabase
-        .from('publicaciones')
+        .from("publicaciones")
         .insert({
           ...data,
           url_archivo,
           nombre_archivo,
           extension_archivo,
+          creado_en: new Date().toISOString(),
+          actualizado_en: new Date().toISOString(),
         })
         .select()
         .single();
 
       if (insertError) {
         set({ isLoading: false });
-        return { success: false, error: `Error al crear publicación: ${insertError.message}` };
+        return {
+          success: false,
+          error: `Error al crear publicación: ${insertError.message}`,
+        };
       }
 
       set((state) => ({
@@ -81,7 +96,8 @@ export const usePostsStore = create<PostsState>((set) => ({
 
       return { success: true, post };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      const errorMessage =
+        error instanceof Error ? error.message : "Error desconocido";
       set({ isLoading: false, error: errorMessage });
       return { success: false, error: errorMessage };
     }
