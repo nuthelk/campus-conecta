@@ -3,7 +3,11 @@ import { supabase } from "@/lib/supabase";
 export const getPosts = async () => {
     const { data, error } = await supabase
         .from('publicaciones')
-        .select('*')
+        .select(`
+            *,
+            likes(*),
+            comentarios(*)
+        `)
         .order('creado_en', { ascending: false });
 
     if (error) {
@@ -11,7 +15,7 @@ export const getPosts = async () => {
         return [];
     }
 
-    return data;
+    return data || [];
 }
 
 

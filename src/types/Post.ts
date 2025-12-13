@@ -10,6 +10,21 @@ export interface CreatePostData {
   url_video?: string | null;
 }
 
+export interface Like {
+  id: string;
+  publicacion_id: string;
+  usuario_id: string;
+  creado_en: string;
+}
+
+export interface Comentario {
+  id: string;
+  publicacion_id: string;
+  usuario_id: string;
+  contenido: string;
+  creado_en: string;
+}
+
 export interface Post {
   id: string;
   usuario_id: string;
@@ -23,4 +38,6 @@ export interface Post {
   creado_en: string;
   actualizado_en: string;
   url_video: string | null;
+  likes?: Like[];
+  comentarios?: Comentario[];
 }
