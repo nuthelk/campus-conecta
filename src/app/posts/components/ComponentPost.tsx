@@ -7,9 +7,10 @@ import CollapsibleText from "@/components/CollapsibleText";
 
 type Props = {
   post: Post;
+  onOpenModal: () => void;
 };
 
-const ComponentPost = ({ post }: Props) => {
+const ComponentPost = ({ post, onOpenModal }: Props) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [user, setUser] = useState<Perfil | null>(null);
@@ -213,7 +214,10 @@ const ComponentPost = ({ post }: Props) => {
             </span>
           )}
         </div>
-        <div className="cursor-pointer hover:bg-[#e8e6fc] p-2 rounded-full flex items-center gap-1">
+        <div
+          className="cursor-pointer hover:bg-[#e8e6fc] p-2 rounded-full flex items-center gap-1"
+          onClick={onOpenModal}
+        >
           <MessageCircle size={20} />
           {post.comentarios && post.comentarios.length > 0 && (
             <span className="text-sm text-[#1B003A] font-medium">
