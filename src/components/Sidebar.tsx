@@ -20,6 +20,8 @@ import {
   SheetHeader,
 } from "./ui/sheet";
 import { Separator } from "./ui/separator";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 // Sidebar Item Component using Button for consistent styling
 const SidebarItem = ({
@@ -48,6 +50,21 @@ const SidebarItem = ({
   </Button>
 );
 
+const handleLogout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+      toast.error("Error al cerrar sesión");
+    } else {
+      toast.success("Sesión cerrada correctamente");
+    }
+  } catch (error) {
+    console.error("Unexpected error signing out:", error);
+    toast.error("Error al cerrar sesión");
+  }
+};
+
 const SidebarContent = ({
   isCollapsed = false,
   onToggle,
@@ -56,6 +73,11 @@ const SidebarContent = ({
   onToggle: () => void;
 }) => {
   const navigate = useNavigate();
+
+  const handleLogoutWithNavigate = async () => {
+    await handleLogout();
+    navigate("/login");
+  };
 
   return (
     <div className="flex flex-col h-full py-6">
@@ -114,7 +136,7 @@ const SidebarContent = ({
           icon={<LogOut size={20} />}
           label="Cerrar sesión"
           isCollapsed={isCollapsed}
-          onClick={() => navigate("/")}
+          onClick={handleLogoutWithNavigate}
         />
       </div>
     </div>
@@ -205,7 +227,7 @@ export const Sidebar = () => {
                   icon={<LogOut size={20} />}
                   label="Cerrar sesión"
                   isCollapsed={false}
-                  onClick={() => navigate("/")}
+                  onClick={handleLogout}
                 />
               </div>
             </div>
