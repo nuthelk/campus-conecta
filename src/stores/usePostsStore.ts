@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "@/lib/supabase";
+import { getPosts } from "@/api/getPosts";
 import type { CreatePostData, Post } from "@/types/Post";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -8,6 +9,7 @@ interface PostsState {
   posts: Post[];
   isLoading: boolean;
   error: string | null;
+  fetchPosts: () => Promise<void>;
   createPost: (
     data: CreatePostData,
     file?: File | null
@@ -18,6 +20,18 @@ export const usePostsStore = create<PostsState>((set) => ({
   posts: [],
   isLoading: false,
   error: null,
+
+  fetchPosts: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const posts = await getPosts();
+      set({ posts, isLoading: false });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error desconocido";
+      set({ error: errorMessage, isLoading: false });
+    }
+  },
 
   createPost: async (data: CreatePostData, file?: File | null) => {
     set({ isLoading: true, error: null });
