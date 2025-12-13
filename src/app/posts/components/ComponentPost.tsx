@@ -10,6 +10,10 @@ import { toast } from "sonner";
 import { formatTimeAgo } from "../utils/formatTimeAgo";
 import { getYouTubeId, isYouTubeUrl, isImageFile } from "../utils/mediaUtils";
 import Archive from "./Archive";
+import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import { useSubcategoriesStore } from "@/stores/useSubcategoriesStore";
+import { renderCategoryIcon } from "@/lib/iconMap";
+import { getColorValue } from "@/lib/colorMap";
 
 type Props = {
   post: Post;
@@ -25,6 +29,13 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
+  const { categories, getCategoryById, fetchCategories } = useCategoriesStore();
+  const { subcategories, getSubcategoryById, fetchSubcategories } =
+    useSubcategoriesStore();
+
+  const category = getCategoryById(post.categoria_id);
+  const subcategory = getSubcategoryById(post.subcategoria_id);
+
   useEffect(() => {
     const fetchUser = async () => {
       const user = await getUser(post.usuario_id);
@@ -32,6 +43,21 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
     };
     fetchUser();
   }, [post.usuario_id]);
+
+  useEffect(() => {
+    // Cargar categorías y subcategorías si no están cargadas
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+    if (subcategories.length === 0) {
+      fetchSubcategories();
+    }
+  }, [
+    categories.length,
+    subcategories.length,
+    fetchCategories,
+    fetchSubcategories,
+  ]);
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -84,7 +110,7 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
   };
 
   return (
-    <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[900px] mb-4">
+    <div className="p-5 rounded-[10px] drop-shadow bg-[#F6F5FF] max-w-[700px] mb-4">
       {/* Header del post */}
       <div className="flex items-start gap-4 mb-4">
         <div className="rounded-full border-2 border-[#6400A9] w-12 h-12 overflow-hidden flex-shrink-0">
@@ -104,19 +130,49 @@ const ComponentPost = ({ post, onOpenModal }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-4 ">
-            <p className="text-[#1B003A] font-semibold text-sm">
-              {user ? `${user.nombre} ${user.apellido}` : "Usuario"}
-            </p>
-            <span className="text-[#928A9C] font-normal text-sm">
-              - {formatTimeAgo(post.creado_en)}
-            </span>
+          <div className="flex justify-between items-center gap-2 ">
+            <div className="flex items-center gap-2">
+              <p className="text-[#1B003A] font-semibold text-sm">
+                {user ? `${user.nombre} ${user.apellido}` : "Usuario"}
+              </p>
+              <span className="text-[#928A9C] font-normal text-sm">
+                - {formatTimeAgo(post.creado_en)}
+              </span>
+            </div>
+            {/* Categoría y Subcategoría */}
+            {category && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                <div
+                  className="group relative overflow-hidden rounded-full px-3 py-1.5 flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300"
+                  style={{ backgroundColor: getColorValue(category.color) }}
+                >
+                  <div className="bg-white/20 p-1 rounded-full backdrop-blur-sm">
+                    {renderCategoryIcon(category.icono, 16)}
+                  </div>
+                  <span className="font-medium text-white text-sm drop-shadow-sm">
+                    {category.nombre}
+                  </span>
+                </div>
+
+                {subcategory && (
+                  <div className="bg-gray-100 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div className="bg-gray-200 p-1 rounded-full">
+                      {renderCategoryIcon(subcategory.icono, 16)}
+                    </div>
+                    <span className="font-medium text-gray-700 text-sm">
+                      {subcategory.nombre}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-2 ">
-            <h3 className="text-[#1B003A] font-semibold text-lg ">
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-[#1B003A] font-semibold text-lg">
               {post.titulo}
             </h3>
           </div>
+
           <CollapsibleText
             text={post.contenido}
             maxLength={150}

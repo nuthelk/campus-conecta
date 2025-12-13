@@ -18,12 +18,12 @@ const Posts = () => {
 
   return (
     <>
-      <main className=" p-8 h-full">
+      <main className="m-auto flex justify-center  p-8 h-full">
         <section className="pb-10">
           <h1 className="text-3xl lg:text-4xl font-bold text-[#1a1b4b] mb-8">
             Publicaciones recientes
           </h1>
-          <div>
+          <div className="pb-20">
             {posts.map((post) => (
               <ComponentPost
                 key={post.id}
