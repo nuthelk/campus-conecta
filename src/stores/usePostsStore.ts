@@ -96,7 +96,10 @@ export const usePostsStore = create<PostsState>((set) => ({
         .single();
 
       if (insertError) {
-        set({ isLoading: false });
+        set({
+          isLoading: false,
+          error: `Error al crear publicación: ${insertError.message}`,
+        });
         return {
           success: false,
           error: `Error al crear publicación: ${insertError.message}`,

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Search, GraduationCap, Loader2, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useCategoriesStore } from "@/stores/useCategoriesStore";
 import { useSubcategoriesStore } from "@/stores/useSubcategoriesStore";
 import { renderCategoryIcon } from "@/lib/iconMap";
@@ -10,12 +9,10 @@ import { useCategoryFilter } from "./hooks/useCategoryFilter";
 import PostCard from "./components/PostCard";
 import PostModal from "@/app/posts/components/PostModal";
 import type { Post } from "@/types/Post";
-import type { Category } from "@/types/Category";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const { categories, isLoading, error, fetchCategories } =
     useCategoriesStore();

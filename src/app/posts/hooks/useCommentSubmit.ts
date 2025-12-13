@@ -5,6 +5,7 @@ import { toast } from "sonner";
 export const useCommentSubmit = (
   postId: string,
   userId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onCommentAdded: (comment: any) => void
 ) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

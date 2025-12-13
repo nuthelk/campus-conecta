@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { usePostsStore } from "@/stores/usePostsStore";
-import type { Post } from "@/types/Post";
 import type { Category } from "@/types/Category";
 
 export const useCategoryFilter = () => {

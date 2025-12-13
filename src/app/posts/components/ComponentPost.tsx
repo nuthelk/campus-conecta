@@ -25,6 +25,7 @@ const ComponentPost = ({ post, onOpenModal, onOpenProfile }: Props) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [user, setUser] = useState<Perfil | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [likes, setLikes] = useState(post.likes || []);
   const [isLiked, setIsLiked] = useState(false);

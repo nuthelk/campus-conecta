@@ -1,7 +1,10 @@
 /**
  * Formatea una fecha relativa al tiempo actual
  */
-export const formatTimeAgo = (dateString: string): string => {
+export const formatTimeAgo = (
+  dateString: string,
+  referenceDate?: Date
+): string => {
   let date: Date;
 
   if (typeof dateString === "string") {
@@ -15,7 +18,7 @@ export const formatTimeAgo = (dateString: string): string => {
     return "Reciente";
   }
 
-  const now = new Date();
+  const now = referenceDate || new Date();
   const diffMs = now.getTime() - date.getTime();
   const absDiffMs = Math.abs(diffMs);
 
