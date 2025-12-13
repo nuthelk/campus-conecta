@@ -10,6 +10,10 @@ import { useCommentSubmit } from "../hooks/useCommentSubmit";
 import { useBodyScroll } from "../hooks/useBodyScroll";
 import CommentItem from "./CommentItem";
 import PostMedia from "./PostMedia";
+import { useCategoriesStore } from "@/stores/useCategoriesStore";
+import { useSubcategoriesStore } from "@/stores/useSubcategoriesStore";
+import { renderCategoryIcon } from "@/lib/iconMap";
+import { getColorValue } from "@/lib/colorMap";
 
 type Props = {
   post: Post;
@@ -29,7 +33,16 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
     addComment
   );
 
+  const { categories } = useCategoriesStore();
+  const { subcategories } = useSubcategoriesStore();
+
   useBodyScroll(isOpen);
+
+  // Obtener categoría y subcategoría del post
+  const postCategory = categories.find((cat) => cat.id === post.categoria_id);
+  const postSubcategory = subcategories.find(
+    (sub) => sub.id === post.subcategoria_id
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -83,7 +96,7 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
                 )}
               </div>
 
-              <div className="flex-1">
+              <div className="flex justify-between w-full items-center">
                 <div className="flex items-center gap-2 mb-2">
                   <p className="text-[#1B003A] font-semibold text-base">
                     {user ? `${user.nombre} ${user.apellido}` : "Usuario"}
@@ -92,12 +105,39 @@ const PostModal = ({ post, isOpen, onClose }: Props) => {
                     - {formatTimeAgo(post.creado_en)}
                   </span>
                 </div>
+                {/* Categoría y Subcategoría */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  {postCategory && (
+                    <div
+                      className={`group relative flex items-center gap-2 px-4 py-2 rounded-full shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer`}
+                      style={{
+                        backgroundColor: getColorValue(postCategory.color),
+                      }}
+                    >
+                      <div className="bg-white/20 p-1 rounded-full backdrop-blur-sm">
+                        {renderCategoryIcon(postCategory.icono, 16)}
+                      </div>
+                      <span className="font-semibold text-white text-sm drop-shadow-sm">
+                        {postCategory.nombre}
+                      </span>
+                    </div>
+                  )}
+
+                  {postSubcategory && (
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 text-gray-700 shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                      <span className="font-medium text-sm">
+                        {postSubcategory.nombre}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <h3 className="text-[#1B003A] font-bold text-2xl mb-4">
               {post.titulo}
             </h3>
+
             <p className="text-[#1B003A] text-base leading-relaxed mb-6">
               {post.contenido}
             </p>
