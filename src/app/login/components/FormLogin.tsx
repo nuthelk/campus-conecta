@@ -7,7 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../lib/supabase";
 import { checkUserExists } from "../../../api/checkUserExists";
 import FloatingLabelInput from "../../../components/FloatingLabelInput";
-import GoogleButton from "../../../components/GoogleButton";
 
 const FormLogin = () => {
   const navigate = useNavigate();
@@ -126,17 +125,17 @@ const FormLogin = () => {
         </button>
 
         {/* Divider */}
-        <div className="relative flex items-center justify-center my-8">
+        {/* <div className="relative flex items-center justify-center my-8">
           <div className="h-px bg-gray-200 w-full absolute"></div>
           <span className="bg-white px-4 text-gray-300 text-sm relative z-10">
             O inicia sesión con
           </span>
-        </div>
+        </div> */}
 
         {/* Social Login */}
-        <div className="flex justify-center ">
+        {/* <div className="flex justify-center ">
           <GoogleButton />
-        </div>
+        </div> */}
       </div>
 
       {/* Footer */}

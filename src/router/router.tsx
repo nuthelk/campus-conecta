@@ -8,6 +8,7 @@ import RegisterPage from "../app/register";
 import CreatePostPage from "../app/create-post";
 import Posts from "@/app/posts";
 import ProfilePage from "@/app/profile";
+import { AuthCallback } from "../components/AuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
             <RegisterPage />
           </PublicRoute>
         ),
+      },
+      {
+        path: "auth/callback",
+        element: <AuthCallback />,
       },
       {
         path: "/",
