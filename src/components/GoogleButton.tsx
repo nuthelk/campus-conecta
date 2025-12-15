@@ -1,12 +1,40 @@
 import React from "react";
+import { supabase } from "@/lib/supabase";
+import { getAuthRedirectUrl } from "@/lib/supabase";
 
 interface GoogleButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  onAuthError?: (error: string) => void;
+}
 
-const GoogleButton = (props: GoogleButtonProps) => {
+const GoogleButton = ({ onAuthError, ...props }: GoogleButtonProps) => {
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: getAuthRedirectUrl(),
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
+      });
+
+      if (error) {
+        console.error("Error en autenticación con Google:", error);
+        onAuthError?.(error.message);
+      }
+    } catch (error) {
+      console.error("Error inesperado en autenticación con Google:", error);
+      onAuthError?.("Error inesperado al iniciar sesión con Google");
+    }
+  };
+
   return (
     <button
       {...props}
+      onClick={handleGoogleSignIn}
       className="cursor-pointer w-20 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24">

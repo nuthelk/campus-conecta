@@ -5,9 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 import FloatingLabelInput from "../../../components/FloatingLabelInput";
-import GoogleButton from "../../../components/GoogleButton";
 import { supabase } from "../../../lib/supabase";
-
 
 const FormRegister = () => {
   const navigate = useNavigate();
@@ -60,6 +58,7 @@ const FormRegister = () => {
           navigate("/login");
         }, 2000);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error signing up:", error.message);
       toast.error("Error al registrar: " + error.message);
@@ -153,17 +152,17 @@ const FormRegister = () => {
         </button>
 
         {/* Divider */}
-        <div className="relative flex items-center justify-center my-8">
+        {/* <div className="relative flex items-center justify-center my-8">
           <div className="h-px bg-gray-200 w-full absolute"></div>
           <span className="bg-white px-4 text-gray-300 text-sm relative z-10">
             O registrate con
           </span>
-        </div>
+        </div> */}
 
         {/* Social Login */}
-        <div className="flex justify-center ">
+        {/* <div className="flex justify-center ">
           <GoogleButton />
-        </div>
+        </div> */}
       </div>
 
       {/* Footer */}
